@@ -23,16 +23,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOneUser = exports.deleteUser = exports.loginUser = exports.registerUser = exports.TestApi = void 0;
+exports.updateUser = exports.getOneUser = exports.deleteUser = exports.loginUser = exports.registerUser = void 0;
 const mssql_1 = __importDefault(require("mssql"));
 const uuid_1 = require("uuid");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const sqlConfig_1 = require("../config/sqlConfig");
-const TestApi = (req, res) => {
-    res.send(res.send({ status: "ok!" }));
-};
-exports.TestApi = TestApi;
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let { userName, email, password, cohort } = req.body;
@@ -107,6 +103,9 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         const pool = yield mssql_1.default.connect(sqlConfig_1.sqlConfig);
         let user = (yield pool.request().input("userID", userID).execute("deleteUser")).recordset;
+        return res.status(200).json({
+            message: "User deleted successfully"
+        });
     }
     catch (error) {
         return res.status(500).json({
@@ -131,3 +130,31 @@ const getOneUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.getOneUser = getOneUser;
+const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userName, password, cohort } = req.body;
+        const userID = req.params.id;
+        if (!userID) {
+            return res.send({ message: "enter id" });
+        }
+        // const hashedPwd = password ? await bcrypt.hash(password, 8) : null;
+        const hashedPwd = yield bcrypt_1.default.hash(password, 8);
+        const pool = yield mssql_1.default.connect(sqlConfig_1.sqlConfig);
+        let result = yield pool
+            .request()
+            .input("userID", mssql_1.default.VarChar, userID)
+            .input("userName", mssql_1.default.VarChar, userName)
+            .input("cohort", mssql_1.default.VarChar, cohort)
+            .input("password", mssql_1.default.VarChar, hashedPwd)
+            .execute("updateUser");
+        return res.status(200).json({
+            message: "User updated successfully"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            message: error,
+        });
+    }
+});
+exports.updateUser = updateUser;

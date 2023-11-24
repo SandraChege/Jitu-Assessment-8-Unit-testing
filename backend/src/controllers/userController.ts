@@ -7,10 +7,6 @@ import jwt from "jsonwebtoken";
 import { sqlConfig } from "../config/sqlConfig";
 
 
-export const TestApi = (req: Request, res: Response) => {
-  res.send(res.send({ status: "ok!" }));
-};
-
 export const registerUser = async (req: Request, res: Response) => {
   try {
     let { userName, email, password, cohort } = req.body;

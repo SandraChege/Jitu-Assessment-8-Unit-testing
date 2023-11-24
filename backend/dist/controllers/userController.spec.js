@@ -72,6 +72,10 @@ describe("Login user", () => {
                 password: "correctPassword",
             },
         };
+        yield (0, userController_1.loginUser)(req, res);
+        expect(res.json).toHaveBeenCalledWith({
+            error: "email is not found",
+        });
     }));
     it("checks if password is correct", () => __awaiter(void 0, void 0, void 0, function* () {
         const req = {
@@ -101,18 +105,18 @@ describe("Login user", () => {
     it("logs a user and returns a token", () => __awaiter(void 0, void 0, void 0, function* () {
         let expectedUser = {
             userID: "9a055430-5a71-4645-b949-d38732244269",
-            userName: "Jane Doe",
-            email: "janr@gmail.com",
-            phone_no: "0710000000",
+            userName: "Sandra Chege",
+            email: "9superbikes@gmail.com",
+            cohort: "cohort17",
             password: "$2b$08$THljbFjhzknBoGrm0.UnXegBeKjb/ks/r8GvyNFw3k4gMAQ.zzvB2",
-            role: "admin",
+            role: "user",
             isDeleted: false,
             Welcomed: false,
         };
         const req = {
             body: {
                 email: "expectedUser.email",
-                password: false,
+                password: "correctpassword",
             },
         };
         jest.spyOn(mssql_1.default, "connect").mockResolvedValueOnce({
@@ -123,11 +127,99 @@ describe("Login user", () => {
         jest.spyOn(bcrypt_1.default, "compare").mockResolvedValueOnce(true);
         jest
             .spyOn(jsonwebtoken_1.default, "sign")
-            .mockReturnValueOnce("generate-token-jghjg-jyiugjxz-mmhjruyiu");
+            .mockReturnValueOnce("generate-token-ccccc-sssssss-mmmmmmm");
         yield (0, userController_1.loginUser)(req, res);
         expect(res.json).toHaveBeenCalledWith({
             message: "Logged in successfully",
-            token: "generate-token-jghjg-jyiugjxz-mmhjruyiu",
+            token: "generate-token-ccccc-sssssss-mmmmmmm",
         });
+    }));
+});
+describe("delete user", () => {
+    it("deletes a user", () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            params: {
+                id: "9a055430-5a71-4645-b949-d38732244269",
+            },
+        };
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+        const mockedRequest = {
+            input: jest.fn().mockReturnThis(),
+            execute: jest.fn().mockResolvedValue({ rowsAffected: [1] }),
+        };
+        jest.spyOn(mssql_1.default, "connect").mockResolvedValue({
+            request: jest.fn().mockReturnValue(mockedRequest),
+        });
+        yield (0, userController_1.deleteUser)(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "User deleted successfully",
+        });
+        expect(mockedRequest.input).toHaveBeenCalledWith("id", mssql_1.default.UniqueIdentifier, "9a055430-5a71-4645-b949-d38732244269");
+    }));
+});
+describe("get one user", () => {
+    it("fetches a user", () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            params: {
+                id: "9a055430-5a71-4645-b949-d38732244269",
+            },
+        };
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+        const expectedUser = {
+            userID: "9a055430-5a71-4645-b949-d38732244269",
+            userName: "Sandra Chege",
+            email: "9superbikes@gmail.com",
+            cohort: "cohort17",
+            password: "$2b$08$THljbFjhzknBoGrm0.UnXegBeKjb/ks/r8GvyNFw3k4gMAQ.zzvB2",
+            role: "user",
+            isDeleted: false,
+            Welcomed: false,
+        };
+        const mockedRequest = {
+            input: jest.fn().mockReturnThis(),
+            execute: jest.fn().mockResolvedValueOnce({ recordset: [expectedUser] }),
+        };
+        jest.spyOn(mssql_1.default, "connect").mockResolvedValue({
+            request: jest.fn().mockReturnValue(mockedRequest),
+        });
+        yield (0, userController_1.getOneUser)(req, res);
+    }));
+});
+describe("update user", () => {
+    it("updates a user", () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            params: {
+                id: "9a055430-5a71-4645-b949-d38732244269"
+            },
+            body: {
+                userName: "Updated Name",
+                password: "newHashedPassword",
+                cohort: "cohort18",
+            }
+        };
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+        const mockedRequest = {
+            input: jest.fn().mockReturnThis(),
+            execute: jest.fn().mockResolvedValue({ rowsAffected: [1] })
+        };
+        jest.spyOn(mssql_1.default, "connect").mockResolvedValue({
+            request: jest.fn().mockReturnValue(mockedRequest)
+        });
+        yield (0, userController_1.updateUser)(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "User updated successfully"
+        });
+        expect(mockedRequest.input).toHaveBeenCalledWith("id", mssql_1.default.UniqueIdentifier, "9a055430-5a71-4645-b949-d38732244");
     }));
 });
