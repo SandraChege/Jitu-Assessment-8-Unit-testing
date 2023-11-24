@@ -1,0 +1,26 @@
+###REGISTER
+POST http://localhost:4520/user/register
+Content-Type: application/json
+
+{
+    "userName":"Isaac Kiptoo",
+    "email":"isaackiptoo@gmail.com",
+    "password":"12345678",
+    "cohort":"cohort17"
+}
+###login
+POST http://localhost:4520/user/login
+Content-Type: application/json
+
+{
+    "email":"9superbikes@gmail.com",
+    "password":"12345678"
+}
+###GET ONE USER
+GET http://localhost:4520/user/getoneuser/a6454caa-6295-4c59-ad31-7b4d4e5cfb15
+
+###UPDATE USER
+PUT http://localhost:4520/user/updateuser/a6454caa-6295-4c59-ad31-7b4d4e5cfb15
+
+###DELETE A USER
+DELETE http://localhost:4520/user/deleteuser/a6454caa-6295-4c59-ad31-7b4d4e5cfb15
