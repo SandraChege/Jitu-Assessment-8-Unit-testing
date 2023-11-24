@@ -3,8 +3,8 @@ POST http://localhost:4520/user/register
 Content-Type: application/json
 
 {
-    "userName":"Sandra Chege",
-    "email":"9superbikes@gmail.com",
+    "userName":"Sandra Mwihaki Chege",
+    "email":"90superbikes@gmail.com",
     "password":"12345678",
     "cohort":"cohort17"
 }
